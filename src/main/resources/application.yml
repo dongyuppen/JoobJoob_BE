@@ -1,0 +1,32 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: joobjoob
+
+  datasource:
+    url: jdbc:mysql://localhost:3306/joobjoobdb?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: root       # ✅ 실제 DB 사용자명으로 교체
+    password: 1234   # ✅ 실제 DB 비밀번호로 교체
+    driver-class-name: com.mysql.cj.jdbc.Driver
+
+  jpa:
+    hibernate:
+      ddl-auto: update            # dev: create/update | prod: validate
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+    show-sql: true
+
+  # JWT 등 커스텀 설정을 넣고 싶다면 이렇게 별도 섹션 생성
+  jwt:
+    secret: your-jwt-secret-key        # ✅ 강력한 비밀키로 교체
+    expiration: 3600000                # 밀리초, 1시간 예시
+
+logging:
+  level:
+    root: INFO
+    org.hibernate.SQL: DEBUG
+    org.springframework.security: INFO
