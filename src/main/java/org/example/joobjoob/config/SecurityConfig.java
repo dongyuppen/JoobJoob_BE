@@ -1,5 +1,6 @@
 package org.example.joobjoob.config;
 
+import org.example.joobjoob.security.JwtAuthenticationFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -9,6 +10,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 // 보안 설정
 @Configuration
@@ -28,26 +30,20 @@ public class SecurityConfig {
         return configuration.getAuthenticationManager();
     }
 
-    // HTTP 보안 설정
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http
-                .csrf(csrf -> csrf.disable()) // CSRF 보호 비활성화
+    public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtFilter) throws Exception {
+        http.csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .anyRequest().permitAll() // API는 누구나 접근 가능, 모든 요청 허용, 일단 테스트용으로 모두 접근 가능하게 열어둠
+                        .requestMatchers("/api/auth/**", "/ws/**", "/api/server-time").permitAll()
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN") // 관리자만 접근 가능
+                        .anyRequest().authenticated()
                 )
+                .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
 
-                // 이런식으로 코드를 수정해서 특정 API를 관리자만 접근 가능하게 설정 가능
-                /*
-                .authorizeHttpRequests(auth -> auth
-            .requestMatchers("/api/auth/**", "/ws/**", "/api/server-time").permitAll() // 특정 API는 누구나 접근 가능
-            .anyRequest().authenticated() // 나머지는 인증 필요
-                 */
-
-                .sessionManagement(session ->
-                        session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                );
-
+        http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
+
+
+
 }
