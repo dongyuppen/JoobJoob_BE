@@ -10,7 +10,7 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Schedule {
+public class Schedule { // 시간표 기능
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -18,10 +18,10 @@ public class Schedule {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "course_id")
-    private Course course;
+    private Course course; // 강의 명
 
 
-    private String dayOfWeek; // MON, TUE ...
-    private String startTime; // e.g. 09:00
-    private String endTime;
+    private String dayOfWeek; // 요일 MON, TUE ...
+    private String startTime; // 시작 시간 (예: 09:00)
+    private String endTime; // 종료 시간
 }

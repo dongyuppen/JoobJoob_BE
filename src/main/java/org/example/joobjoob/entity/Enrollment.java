@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class Enrollment {
+public class Enrollment { // 수강신청
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

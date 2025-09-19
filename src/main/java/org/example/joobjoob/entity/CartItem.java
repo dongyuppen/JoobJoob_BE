@@ -12,7 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CartItem {
+public class CartItem { // 수강바구나 기능
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

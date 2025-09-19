@@ -8,23 +8,23 @@ import lombok.*;
 @Entity
 @Table(name = "courses")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor @Builder
-public class Course {
+public class Course { // 강의 정보
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
 
-    private String code;
+    private String code; //강의 코드
 
 
-    private String title;
+    private String title; // 강의명
 
 
     @Column(length = 2000)
-    private String description;
+    private String description; // 설명
 
 
-    private Integer credit;
+    private Integer credit; // 학점
 
 
     private Integer capacity; // 정원
@@ -33,5 +33,5 @@ public class Course {
     private Integer currentEnrollment = 0; // 현재 신청 인원
 
 
-    private String semester;
+    private String semester; // 학기 (예: 2025-1)
 }
