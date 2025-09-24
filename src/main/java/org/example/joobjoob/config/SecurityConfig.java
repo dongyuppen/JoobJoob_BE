@@ -12,6 +12,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static org.springframework.security.config.Customizer.withDefaults;
+
 // 보안 설정
 @Configuration
 public class SecurityConfig {
@@ -32,10 +34,12 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http, JwtAuthenticationFilter jwtFilter) throws Exception {
-        http.csrf(csrf -> csrf.disable())
+        http
+                .cors(withDefaults()) // 👈  1. 이 줄을 추가하여 WebConfig의 CORS 설정을 사용하도록 합니다.
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/api/auth/**", "/ws/**", "/api/server-time").permitAll()
-                        .requestMatchers("/api/admin/**").hasRole("ADMIN") // 관리자만 접근 가능
+                        .requestMatchers("/api/auth/**", "/ws/**", "/api/server-time").permitAll() // '/ws/**' 가 permitAll에 있는지 확인
+                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(sm -> sm.sessionCreationPolicy(SessionCreationPolicy.STATELESS));
@@ -43,7 +47,4 @@ public class SecurityConfig {
         http.addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
-
-
-
 }
