@@ -50,10 +50,13 @@ public class AuthController {
                 .orElseThrow(() -> new RuntimeException("존재하지 않는 학번입니다."));
 
         if (!passwordEncoder.matches(request.getPassword(), student.getPassword())) {
-            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호가 틀렸습니다.");
+            return ResponseEntity
+                    .status(HttpStatus.UNAUTHORIZED).body("비밀번호가 틀렸습니다.");
         }
 
-        String token = jwtTokenProvider.createToken(student.getStudentNumber(), student.getRole());
+        // ✅ 수정된 메소드 호출: student 객체 전체를 전달
+        String token = jwtTokenProvider.createToken(student);
+
         return ResponseEntity.ok(new LoginResponse(token));
     }
 }

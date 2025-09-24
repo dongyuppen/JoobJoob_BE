@@ -18,9 +18,9 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        // 👈 2. setAllowedOrigins("*") 설정이 올바르게 되어 있는지 다시 확인합니다.
         registry.addEndpoint("/ws")
-                .setAllowedOrigins("*") // 모든 출처 허용 (개발 시) 또는 "http://127.0.0.1:5500" 와 같이 특정 출처 지정
+                // ✅ 3. 여기도 와일드카드(*) 대신 정확한 프론트엔드 주소를 지정합니다.
+                .setAllowedOrigins("http://127.0.0.1:5500", "http://localhost:5500")
                 .withSockJS();
     }
 }
