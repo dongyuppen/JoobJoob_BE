@@ -4,46 +4,43 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import org.example.joobjoob.entity.Student;
+import org.example.joobjoob.entity.Student; // Student 엔티티 import
 import org.springframework.stereotype.Component;
-
 import java.security.Key;
 import java.util.Date;
 
-// JWT Util 클래스
 @Component
 public class JwtTokenProvider {
     private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     private final long validityInMilliseconds = 1000 * 60 * 60; // 1시간 유효
 
-    // 토큰 생성 메소드 수정
-    public String createToken(Student student) { // 파라미터를 Student 객체로 변경
+    // ✅ [수정] Student 객체를 받아 학년, 학과 정보를 claim에 추가
+    public String createToken(Student student) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
         return Jwts.builder()
-                .setSubject(student.getStudentNumber()) // 'sub' 클레임에 학번 설정
-                .claim("role", student.getRole())       // 'role' 클레임에 역할 설정
-                .claim("name", student.getName())       // ✅ 'name' 클레임을 추가하여 학생 이름 저장
+                .setSubject(student.getStudentNumber())
+                .claim("role", student.getRole())
+                .claim("name", student.getName())
+                .claim("grade", student.getGrade()) // 학년 정보 추가
+                .claim("department", student.getDepartment()) // 학과 정보 추가
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(key)
                 .compact();
     }
 
-    // 토큰에서 학번 추출
     public String getStudentNumber(String token) {
         return Jwts.parserBuilder().setSigningKey(key).build()
                 .parseClaimsJws(token).getBody().getSubject();
     }
 
-    // 토큰에서 role 추출
     public String getRole(String token) {
         return (String) Jwts.parserBuilder().setSigningKey(key).build()
                 .parseClaimsJws(token).getBody().get("role");
     }
 
-    // 토큰 검증
     public boolean validateToken(String token) {
         try {
             Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);

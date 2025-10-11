@@ -60,6 +60,7 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호가 틀렸습니다.");
         }
 
+        // ✅ Student 객체 전체를 전달하여 모든 정보가 토큰에 포함되도록 함
         String token = jwtTokenProvider.createToken(student);
         return ResponseEntity.ok(new LoginResponse(token));
     }
