@@ -9,11 +9,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
+
     private final StudentRepository studentRepository;
     private final PasswordEncoder passwordEncoder;
 
-
-    public Student signup(String studentNumber, String rawPassword, String name, String role) {
+    // ✅ [수정] grade와 department를 파라미터로 추가
+    public Student signup(String studentNumber, String rawPassword, String name, String role, String grade, String department) {
         if(studentRepository.findByStudentNumber(studentNumber).isPresent()){
             throw new RuntimeException("이미 존재하는 학번입니다.");
         }
@@ -22,10 +23,9 @@ public class AuthService {
                 .password(passwordEncoder.encode(rawPassword))
                 .name(name)
                 .role(role == null ? "STUDENT" : role)
+                .grade(grade) // ✅ grade 정보 저장
+                .department(department) // ✅ department 정보 저장
                 .build();
         return studentRepository.save(s);
     }
-
-
-// login should verify password and issue JWT; omitted for brevity
 }

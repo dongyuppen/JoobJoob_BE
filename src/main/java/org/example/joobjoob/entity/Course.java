@@ -34,4 +34,8 @@ public class Course { // 강의 정보
 
 
     private String semester; // 학기 (예: 2025-1)
+
+    private String targetGrade;
+
+    private String department;
 }

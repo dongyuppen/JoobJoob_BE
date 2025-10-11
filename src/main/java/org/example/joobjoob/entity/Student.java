@@ -30,6 +30,10 @@ public class Student {
 
     private LocalDateTime createdAt;
 
+    // ✅ [추가] 학년과 학과(전공) 필드
+    private String grade;
+    private String department;
+
 
     @PrePersist
     public void prePersist(){
