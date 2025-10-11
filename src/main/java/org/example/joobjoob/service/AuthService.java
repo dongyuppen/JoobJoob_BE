@@ -13,8 +13,8 @@ public class AuthService {
     private final StudentRepository studentRepository;
     private final PasswordEncoder passwordEncoder;
 
-    // ✅ [수정] grade와 department를 파라미터로 추가
-    public Student signup(String studentNumber, String rawPassword, String name, String role, String grade, String department) {
+    // ✅ [수정] maxCredits를 파라미터로 추가
+    public Student signup(String studentNumber, String rawPassword, String name, String role, String grade, String department, Integer maxCredits) {
         if(studentRepository.findByStudentNumber(studentNumber).isPresent()){
             throw new RuntimeException("이미 존재하는 학번입니다.");
         }
@@ -23,8 +23,9 @@ public class AuthService {
                 .password(passwordEncoder.encode(rawPassword))
                 .name(name)
                 .role(role == null ? "STUDENT" : role)
-                .grade(grade) // ✅ grade 정보 저장
-                .department(department) // ✅ department 정보 저장
+                .grade(grade)
+                .department(department)
+                .maxCredits(maxCredits) // ✅ maxCredits 정보 저장
                 .build();
         return studentRepository.save(s);
     }

@@ -14,8 +14,8 @@ public class JwtTokenProvider {
     private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
     private final long validityInMilliseconds = 1000 * 60 * 60; // 1시간 유효
 
-    // ✅ [수정] Student 객체를 받아 학년, 학과 정보를 claim에 추가
-    public String createToken(Student student) {
+    // ✅ [수정] availableCredits 파라미터를 추가
+    public String createToken(Student student, Integer availableCredits) {
         Date now = new Date();
         Date validity = new Date(now.getTime() + validityInMilliseconds);
 
@@ -23,8 +23,9 @@ public class JwtTokenProvider {
                 .setSubject(student.getStudentNumber())
                 .claim("role", student.getRole())
                 .claim("name", student.getName())
-                .claim("grade", student.getGrade()) // 학년 정보 추가
-                .claim("department", student.getDepartment()) // 학과 정보 추가
+                .claim("grade", student.getGrade())
+                .claim("department", student.getDepartment())
+                .claim("availableCredits", availableCredits) // ✅ 신청 가능 학점 정보 추가
                 .setIssuedAt(now)
                 .setExpiration(validity)
                 .signWith(key)

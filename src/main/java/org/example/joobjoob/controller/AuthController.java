@@ -4,6 +4,7 @@ import lombok.*;
 import org.example.joobjoob.Dto.LoginRequest;
 import org.example.joobjoob.Dto.LoginResponse;
 import org.example.joobjoob.entity.Student;
+import org.example.joobjoob.repository.EnrollmentRepository;
 import org.example.joobjoob.repository.StudentRepository;
 import org.example.joobjoob.security.JwtTokenProvider;
 import org.example.joobjoob.service.AuthService;
@@ -23,11 +24,20 @@ public class AuthController {
     private final StudentRepository studentRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtTokenProvider jwtTokenProvider;
+    private final EnrollmentRepository enrollmentRepository; // ✅ EnrollmentRepository 주입
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SignupReq req){
-        // ✅ [수정] 서비스 호출 시 grade와 department 정보 전달
-        Student s = authService.signup(req.getStudentNumber(), req.getPassword(), req.getName(), "STUDENT", req.getGrade(), req.getDepartment());
+        // ✅ [수정] 서비스 호출 시 maxCredits 정보 전달
+        Student s = authService.signup(
+                req.getStudentNumber(),
+                req.getPassword(),
+                req.getName(),
+                "STUDENT",
+                req.getGrade(),
+                req.getDepartment(),
+                req.getMaxCredits() // maxCredits 값 추가
+        );
         return ResponseEntity.ok(s);
     }
 
@@ -38,7 +48,9 @@ public class AuthController {
         private String name;
         private String grade;
         private String department;
+        private Integer maxCredits; // maxCredits 필드 추가
 
+        // ... 기존 getter/setter ...
         public String getStudentNumber(){return studentNumber;}
         public void setStudentNumber(String s){this.studentNumber=s;}
         public String getPassword(){return password;}
@@ -49,6 +61,10 @@ public class AuthController {
         public void setGrade(String grade) { this.grade = grade; }
         public String getDepartment() { return department; }
         public void setDepartment(String department) { this.department = department; }
+
+        // maxCredits getter/setter 추가
+        public Integer getMaxCredits() { return maxCredits; }
+        public void setMaxCredits(Integer maxCredits) { this.maxCredits = maxCredits; }
     }
 
     @PostMapping("/login")
@@ -60,8 +76,20 @@ public class AuthController {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("비밀번호가 틀렸습니다.");
         }
 
-        // ✅ Student 객체 전체를 전달하여 모든 정보가 토큰에 포함되도록 함
-        String token = jwtTokenProvider.createToken(student);
+        // --- ✅ [추가] 신청 가능 학점 계산 로직 ---
+        // 1. 학생이 현재 신청한 총 학점 계산 (신청 내역 없으면 0)
+        Integer enrolledCredits = enrollmentRepository.sumCreditsByStudentId(student.getId());
+        if (enrolledCredits == null) {
+            enrolledCredits = 0;
+        }
+
+        // 2. 학생의 최대 학점에서 현재 신청 학점을 빼서 신청 가능 학점 계산
+        int availableCredits = student.getMaxCredits() - enrolledCredits;
+        // --- ✅ 계산 로직 끝 ---
+
+        // ✅ [수정] createToken 호출 시 계산된 availableCredits 전달
+        String token = jwtTokenProvider.createToken(student, availableCredits);
+
         return ResponseEntity.ok(new LoginResponse(token));
     }
 }

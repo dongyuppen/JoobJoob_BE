@@ -34,6 +34,9 @@ public class Student {
     private String grade;
     private String department;
 
+    // ✅ [추가] 최대 신청 가능 학점 필드
+    private Integer maxCredits;
+
 
     @PrePersist
     public void prePersist(){
