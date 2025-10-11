@@ -28,27 +28,25 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> signup(@RequestBody SignupReq req){
-        // ✅ [수정] 서비스 호출 시 maxCredits 정보 전달
+        // ✅ [수정] 서비스 호출 시 maxCredits 전달 로직 제거
         Student s = authService.signup(
                 req.getStudentNumber(),
                 req.getPassword(),
                 req.getName(),
                 "STUDENT",
                 req.getGrade(),
-                req.getDepartment(),
-                req.getMaxCredits() // maxCredits 값 추가
+                req.getDepartment()
         );
         return ResponseEntity.ok(s);
     }
 
-    // ✅ [수정] SignupReq DTO에 필드 및 getter/setter 추가
+    // ✅ [수정] SignupReq DTO에서 maxCredits 관련 코드 모두 제거
     public static class SignupReq {
         private String studentNumber;
         private String password;
         private String name;
         private String grade;
         private String department;
-        private Integer maxCredits; // maxCredits 필드 추가
 
         // ... 기존 getter/setter ...
         public String getStudentNumber(){return studentNumber;}
@@ -61,10 +59,6 @@ public class AuthController {
         public void setGrade(String grade) { this.grade = grade; }
         public String getDepartment() { return department; }
         public void setDepartment(String department) { this.department = department; }
-
-        // maxCredits getter/setter 추가
-        public Integer getMaxCredits() { return maxCredits; }
-        public void setMaxCredits(Integer maxCredits) { this.maxCredits = maxCredits; }
     }
 
     @PostMapping("/login")
