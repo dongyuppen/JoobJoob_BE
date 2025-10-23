@@ -30,3 +30,6 @@ logging:
     root: INFO
     org.hibernate.SQL: DEBUG
     org.springframework.security: INFO
+
+  openai:
+    api-key: ${OPENAI_API_KEY}

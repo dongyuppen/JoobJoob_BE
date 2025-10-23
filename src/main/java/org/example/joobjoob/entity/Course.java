@@ -38,4 +38,7 @@ public class Course { // 강의 정보
     private String targetGrade;
 
     private String department;
+
+    // ✅ [추가] 강의 시간표 정보 (예: "월 1,2/수 3,4")
+    private String scheduleString;
 }
